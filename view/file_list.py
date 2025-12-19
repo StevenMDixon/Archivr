@@ -9,19 +9,17 @@ class FileList(BaseComponent):
 
     def on_list_box_select(self, event):
         selection_indices = self.root.curselection()
-        print(f"Listbox Selection Indices: {selection_indices}")
-
         if selection_indices:
             index = selection_indices[0]
-            selected_item = self.root.get(index)
-            print(f"Selected Item: {selected_item} (Index: {index})")
             self.state.set_selected_file(index)
+        # else:
+        #     self.root.selection_set(self.state.get_selected_file().index)
         
     def populate(self):
         self.root.delete(0, tk.END)
         items = self.state.get_files()
         for item in items:
-            self.root.insert(tk.END, item.file_name)
+            self.root.insert(tk.END, item.file_name + item.extension)
 
     def setup(self):
         self.state.subscribe('files', lambda files: self.populate())

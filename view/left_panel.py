@@ -9,7 +9,7 @@ class LeftPanel(BaseComponent):
 
     def _open_file_dialog(self):
             folder_path = filedialog.askdirectory(
-                initialdir="/", 
+                initialdir="./", 
                 title="Select a folder"
                 )
             return folder_path
@@ -20,7 +20,7 @@ class LeftPanel(BaseComponent):
         self.registerComponent('selected_folder_label', BaseComponent(ttk.Label(self.root, text="No folder selected"), state=self.state))
         self.registerComponent('file_list', FileList(Listbox(self.root, selectmode=SINGLE, height=6), state=self.state))
 
-        self.state.subscribe('selectedFolder', lambda folder: self.components['selected_folder_label'].root.config(text=folder or "No folder selected"))
+        self.state.subscribe('selectedFolder', lambda folder: self.components['selected_folder_label'].root.config(text=folder[-50:] or "No folder selected"))
 
     def pack(self):
         self.setup()

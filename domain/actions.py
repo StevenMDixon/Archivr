@@ -10,12 +10,13 @@ class MediaItem():
     path: str
     year: str = ''
     rating: str = ''
-    timeslot: str = ''
     season: str = ''
-    network: str = ''
     runtime: str = ''
     resolution: str = ''
-    formmated: str = False
+    network: str = ''
+    watermark: bool = False
+    formmated: bool = False
+    index: int = -1
 
 class Actions():
     video_extensions = ('.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm', '.m4v')
@@ -71,16 +72,18 @@ class Actions():
     
     def read_dir(self):
         files = []
+        index = 0
         for dirpath, _, filenames in os.walk(self.get_selected_folder()):
             for filename in filenames:
                 if filename.lower().endswith(self.video_extensions):
-                    files.append(self._parseFileName(filename, dirpath))
-        for file in files:
-            print(file)
+                    files.append(self._parseFileName(filename, dirpath, index))
+                    index += 1
+        
+        files.sort(key=lambda x: x.file_name)
         self.state.set('files', files)
         self._notify_subscribers('files')
 
-    def _parseFileName(self, file_name: str, path: str) -> MediaItem:
+    def _parseFileName(self, file_name: str, path: str, index: int) -> MediaItem:
         name, extension = os.path.splitext(file_name)
         formatted = self._fileIncludesMeta(file_name)
         
@@ -92,17 +95,18 @@ class Actions():
             data = self._parseCrazyMetaData(file_name)
 
         return MediaItem(
-            file_name=name + extension,
+            file_name=name,
             extension=extension,
             path=path,
             year= data[0],
             rating=data[1],
-            timeslot=data[2],
-            season=data[3],
-            network=data[4],
-            runtime=data[5],
-            resolution=data[6],
-            formmated=formatted
+            season=data[2],
+            runtime=data[3],
+            resolution=data[4],
+            network=data[5],
+            watermark=data[6],  
+            formmated=formatted,
+            index=index
         )
     
     def _fileIncludesMeta(self, file_name: str) -> bool:
@@ -115,9 +119,7 @@ class Actions():
         year = match.group(0) if match else ''  
         return (year, '', '', '', '', '', '')
 
-    #C:\Users\Helreizer55\Documents\GitHub\Archivr\tests
     def _parseSaneMetaData(self, file_name: str):
-        # Placeholder for metadata parsing logic
         # Gerber Life Grow-Up Plan -[1994,A,A,31:12,720p,A,O]
         pattern = re.compile(r'\[(\d{2,4}.*?)\]')
         match = pattern.search(file_name)
