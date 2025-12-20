@@ -2,6 +2,7 @@ from tkinter import ttk, LEFT, BOTH, Y
 from tkinter import filedialog, Listbox, SINGLE
 from view.base_component import BaseComponent
 from view.file_list import FileList
+from domain.actions import Event
 
 class LeftPanel(BaseComponent):
     def __init__(self, root, state):
@@ -20,7 +21,7 @@ class LeftPanel(BaseComponent):
         self.registerComponent('selected_folder_label', BaseComponent(ttk.Label(self.root, text="No folder selected"), state=self.state))
         self.registerComponent('file_list', FileList(Listbox(self.root, selectmode=SINGLE, height=6), state=self.state))
 
-        self.state.subscribe('selectedFolder', lambda folder: self.components['selected_folder_label'].root.config(text=folder[-50:] or "No folder selected"))
+        self.state.event_manager.subscribe(Event.SELECTED_FOLDER.value, lambda folder: self.components['selected_folder_label'].root.config(text=folder[-50:] or "No folder selected"))
 
     def pack(self):
         self.setup()

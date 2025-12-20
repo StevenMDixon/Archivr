@@ -1,2 +1,4 @@
 tkinter
 sv-ttk
+python-vlc
+ffmpeg-python

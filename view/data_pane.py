@@ -1,5 +1,6 @@
 from view.base_component import BaseComponent
-from tkinter import ttk, RIGHT, BOTH, END
+from domain.actions import Event
+from tkinter import ttk, TOP, BOTH, END, HORIZONTAL
 
 class DataPane(BaseComponent):
     def __init__(self, root, state):
@@ -7,7 +8,6 @@ class DataPane(BaseComponent):
 
     def file_data_updated(self, event):
         file = self.state.get_selected_file()
-        print(f"Selected File Updated: {file}")
         if file:
             self.components['MediaName_Input'].delete(0, END)
             self.components['MediaName_Input'].insert(0, f"{file.file_name}")
@@ -43,7 +43,7 @@ class DataPane(BaseComponent):
             self.components['WaterMark_Input'].delete(0, END)
 
     def setup(self):
-        self.state.subscribe('selectedFile', self.file_data_updated)
+        self.state.event_manager.subscribe(Event.SELECTED_FILE.value, self.file_data_updated)
 
         self.registerComponent('MediaName_Label', ttk.Label(self.root, text="Name: "))
         self.registerComponent('MediaName_Input', ttk.Entry(self.root))
@@ -68,34 +68,57 @@ class DataPane(BaseComponent):
 
         self.registerComponent('WaterMark_Label', ttk.Label(self.root, text="Watermark: "))
         self.registerComponent('WaterMark_Input', ttk.Entry(self.root))
+        
+        self.registerComponent('Separator_Horizontal', ttk.Separator(self.root, orient=HORIZONTAL))
+
+        self.registerComponent('Format_Button', ttk.Button(self.root, text="Format Name", command=self.state.normalize_stub))
+
+        self.registerComponent('Save_Button', ttk.Button(self.root, text="Rename and Save File"))
+        self.registerComponent('Delete_Button', ttk.Button(self.root, text="Delete File"))
+
+        self.registerComponent('Metadata_Button', ttk.Button(self.root, text="Metadata", command=self.state.get_metadata))
 
     def pack(self):
 
         self.setup()
-        self.root.pack(fill='both', expand=True, padx=10, pady=10)
+        self.root.pack(side=TOP, fill=BOTH, padx=10, pady=10)
 
         self.root.grid_columnconfigure(1, weight=1)
 
         self.components['MediaName_Label'].grid(row=0,column=0)
-        self.components['MediaName_Input'].grid(row=0,column=1, sticky="ew")
+        self.components['MediaName_Input'].grid(row=0,column=1, columnspan=2, sticky="ew", padx=1, pady=5)
 
         self.components['Year_Label'].grid(row=1,column=0)
-        self.components['Year_Input'].grid(row=1,column=1, sticky="ew")
+        self.components['Year_Input'].grid(row=1,column=1, sticky="ew", padx=1, pady=5)
+
+        self.components['Format_Button'].grid(row=1,column=2, sticky="ew", padx=5, pady=5)
 
         self.components['Rating_Label'].grid(row=2,column=0)
-        self.components['Rating_Input'].grid(row=2,column=1, sticky="ew")
+        self.components['Rating_Input'].grid(row=2,column=1, sticky="ew", padx=1, pady=5)
 
         self.components['Season_Label'].grid(row=3,column=0)
-        self.components['Season_Input'].grid(row=3,column=1, sticky="ew")
+        self.components['Season_Input'].grid(row=3,column=1, sticky="ew", padx=1, pady=5)
 
         self.components['Runtime_Label'].grid(row=4,column=0)
-        self.components['Runtime_Input'].grid(row=4,column=1, sticky="ew")
-        
+        self.components['Runtime_Input'].grid(row=4,column=1, sticky="ew", padx=1, pady=5)
+
+        self.components['Metadata_Button'].grid(row=4,column=2, sticky="ew", padx=5, pady=5)
+
         self.components['Resolution_Label'].grid(row=5,column=0)
-        self.components['Resolution_Input'].grid(row=5,column=1, sticky="ew")
+        self.components['Resolution_Input'].grid(row=5,column=1, sticky="ew", padx=1, pady=5)
 
         self.components['Networks_Label'].grid(row=6,column=0)
-        self.components['Networks_Input'].grid(row=6,column=1, sticky="ew")
+        self.components['Networks_Input'].grid(row=6,column=1, sticky="ew", padx=1, pady=5)
 
         self.components['WaterMark_Label'].grid(row=7,column=0)
-        self.components['WaterMark_Input'].grid(row=7,column=1, sticky="ew")
+        self.components['WaterMark_Input'].grid(row=7,column=1, sticky="ew", padx=1, pady=5)
+
+        self.components['Separator_Horizontal'].grid(row=8,column=0, columnspan=2, sticky="ew", pady=10)
+
+        
+
+        self.components['Save_Button'].grid(row=10, column=2, sticky="ew", padx=5, pady=5)
+        
+        self.components['Delete_Button'].grid(row=11,column=2, sticky="ew", padx=5, pady=5)
+
+        

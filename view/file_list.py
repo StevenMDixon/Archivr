@@ -2,6 +2,7 @@ from view.base_component import BaseComponent
 from tkinter import ttk
 import tkinter as tk
 from tkinter import ttk, LEFT, BOTH, Y
+from domain.actions import Event
 
 class FileList(BaseComponent):
     def __init__(self, root, state):
@@ -12,8 +13,6 @@ class FileList(BaseComponent):
         if selection_indices:
             index = selection_indices[0]
             self.state.set_selected_file(index)
-        # else:
-        #     self.root.selection_set(self.state.get_selected_file().index)
         
     def populate(self):
         self.root.delete(0, tk.END)
@@ -22,7 +21,7 @@ class FileList(BaseComponent):
             self.root.insert(tk.END, item.file_name + item.extension)
 
     def setup(self):
-        self.state.subscribe('files', lambda files: self.populate())
+        self.state.event_manager.subscribe(Event.FILES.value, lambda files: self.populate())
         self.root.bind('<<ListboxSelect>>', self.on_list_box_select)
 
     def pack(self):
